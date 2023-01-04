@@ -1,8 +1,11 @@
 // to do
 // import font packages and change fonts
+// add login authentication
+// fix unecessary containers
 
 import 'package:flutter/material.dart';
 import 'package:sb_inventory/login.dart';
+import 'package:sb_inventory/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -93,35 +96,30 @@ final lowerButtons = Container(
                     MaterialPageRoute(
                       builder: (context) => Login(),
                     ));
-              },
+              }, // onPressed
               child: const Text("LOG IN", style: buttonStyle),
             ));
       }),
-      /*
-      Padding(
-          padding: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              //backgroundColor: Colors.green,
-              side: const BorderSide(color: Colors.black, width: 2),
-              fixedSize: const Size(167, 57),
-            ),
-            onPressed: () {},
-            child: const Text("LOG IN", style: buttonStyle),
-          )),
-          */
-      Padding(
-        padding: const EdgeInsets.fromLTRB(0.5, 200, 0, 0),
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(192, 225, 244, 1),
-            side: const BorderSide(color: Colors.black, width: 2),
-            fixedSize: const Size(175, 57),
-          ),
-          onPressed: () {},
-          child: const Text("REGISTER", style: buttonStyle),
-        ),
-      ),
+      // REGISTER button
+      Builder(builder: (BuildContext context) {
+        return Padding(
+            padding: const EdgeInsets.fromLTRB(0.5, 200, 0, 0),
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(192, 225, 244, 1),
+                side: const BorderSide(color: Colors.black, width: 2),
+                fixedSize: const Size(175, 57),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Register(),
+                    ));
+              },
+              child: const Text("REGISTER", style: buttonStyle),
+            ));
+      }),
     ], //children
   ),
 );
