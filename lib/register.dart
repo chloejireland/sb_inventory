@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sb_inventory/register2.dart';
 
-void main() {
-  runApp(const Register());
-}
+//void main() {
+//  runApp(const Register());
+//}
 
 class Register extends StatelessWidget {
   const Register({super.key});

@@ -3,9 +3,9 @@
 
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const Register2());
-}
+//void main() {
+//  runApp(const Register2());
+//}
 
 class Register2 extends StatelessWidget {
   const Register2({super.key});

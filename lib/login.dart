@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sb_inventory/addItems.dart';
 
-void main() {
-  runApp(const Login());
-}
+//void main() {
+//  runApp(const Login());
+//}
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -71,25 +72,33 @@ final logInCol = Column(
         )),
       ),
       // log in button
-      Padding(
-        padding: const EdgeInsets.fromLTRB(25, 20, 25, 10),
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(192, 225, 244, 1),
-            side: const BorderSide(color: Colors.black, width: 2),
-            fixedSize: const Size(379, 52),
-          ),
-          onPressed: () {},
-          child: const Text(
-            'LOG IN',
-            style: TextStyle(
-              color: Colors.black,
-              fontFamily: 'Viga',
-              fontSize: 13,
+      Builder(builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(25, 20, 25, 10),
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              backgroundColor: const Color.fromRGBO(192, 225, 244, 1),
+              side: const BorderSide(color: Colors.black, width: 2),
+              fixedSize: const Size(379, 52),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddItems(),
+                  ));
+            },
+            child: const Text(
+              'LOG IN',
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Viga',
+                fontSize: 13,
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      })
       // keyboard
     ]);
 
