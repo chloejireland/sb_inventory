@@ -1,3 +1,3 @@
-# sb_inventory
+# sp_inventory
 
 A Flutter inventory project.
