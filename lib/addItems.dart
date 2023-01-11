@@ -47,9 +47,9 @@ class AddItemsState extends State<AddItems> {
                   // ignore: prefer_const_constructors
                   Padding(
                       padding: const EdgeInsets.fromLTRB(25, 0, 45, 0),
-                      child: const Text(
-                        "Jumbo Ring",
+                      child: TextField(
                         style: hRowStyle,
+                        decoration: const InputDecoration(hintText: 'add...'),
                       )),
 
                   // ignore: avoid_unnecessary_containers
@@ -66,6 +66,16 @@ class AddItemsState extends State<AddItems> {
                     ),
                     padding: EdgeInsets.all(5),
                   ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(45, 0, 0, 0),
+                    child: IconButton(
+                      icon: const Icon(Icons.clear_rounded),
+                      iconSize: 25,
+                      onPressed: () {
+                        // delete row
+                      },
+                    ),
+                  ),
                 ]);
               },
               separatorBuilder: (BuildContext context, int index) =>
@@ -74,7 +84,7 @@ class AddItemsState extends State<AddItems> {
                 thickness: 1,
                 color: Colors.black,
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -87,6 +97,10 @@ class AddItemsState extends State<AddItems> {
       scanTxt,
       divLine,
       headRow,
+      const Divider(
+        thickness: 1,
+        color: Colors.black,
+      )
     ],
   ); // end pageCol
 
@@ -132,7 +146,7 @@ class AddItemsState extends State<AddItems> {
     height: 20,
     endIndent: 30,
     indent: 30,
-    thickness: 2,
+    thickness: 1,
     color: Colors.black,
   );
 // **** end Divider ****
@@ -175,7 +189,7 @@ class AddItemsState extends State<AddItems> {
       ),
       // cancel
       const Padding(
-        padding: EdgeInsets.fromLTRB(0, 12, 2, 0),
+        padding: EdgeInsets.fromLTRB(40, 12, 2, 0),
         child: Text(
           "Cancel",
           style: hRowStyle,
