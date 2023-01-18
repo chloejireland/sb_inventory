@@ -1,19 +1,46 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class AddItems extends StatefulWidget {
-  const AddItems({super.key});
-
+class AddItems extends StatelessWidget {
   @override
-  State<AddItems> createState() => AddItemsState();
+  Widget build(BuildContext context) {
+    return AddItemsPage();
+  }
 }
 
-class AddItemsState extends State<AddItems> {
-  bool checkBoxVal = false;
-  final List<String> items = <String>["Item 1", "Item 2", "Item 3"];
+class AddItemsPage extends StatefulWidget {
+  const AddItemsPage({super.key});
+
+  @override
+  _AddItemsPageState createState() => _AddItemsPageState();
+}
+
+class _AddItemsPageState extends State<AddItemsPage> {
+  static final List<String> items = <String>["Item 1", "Item 2", "Item 3"];
+
+  final database = FirebaseDatabase.instance.ref();
+
+  final TextEditingController itemCtrl = TextEditingController();
+  final TextEditingController numCtrl = TextEditingController();
+  final TextEditingController groupCtrl = TextEditingController();
+
+  List<bool> isChecked = List<bool>.generate(items.length, (index) => false);
+
+  // discard any resources used up by the object
+  @override
+  void dispose() {
+    itemCtrl.dispose();
+    numCtrl.dispose();
+    groupCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final toolsRef = database.child('/tools');
+
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
@@ -27,12 +54,13 @@ class AddItemsState extends State<AddItems> {
               padding: const EdgeInsets.all(5),
               itemCount: items.length,
               itemBuilder: (context, index) {
-                return Row(children: [
+                final item = items[index];
+                return Row(key: ObjectKey(item), children: [
                   Checkbox(
-                    value: checkBoxVal,
-                    onChanged: (bool? value) {
+                    value: isChecked[index],
+                    onChanged: (value) {
                       setState(() {
-                        checkBoxVal = value!;
+                        isChecked[index] = value!;
                       });
                     },
                   ),
@@ -47,9 +75,9 @@ class AddItemsState extends State<AddItems> {
                   // ignore: prefer_const_constructors
                   Padding(
                       padding: const EdgeInsets.fromLTRB(25, 0, 45, 0),
-                      child: TextField(
+                      child: const Text(
+                        "Jumbo Wax Ring",
                         style: hRowStyle,
-                        decoration: const InputDecoration(hintText: 'add...'),
                       )),
 
                   // ignore: avoid_unnecessary_containers
@@ -72,12 +100,12 @@ class AddItemsState extends State<AddItems> {
                       icon: const Icon(Icons.clear_rounded),
                       iconSize: 25,
                       onPressed: () {
-                        // delete row
+                        //items.removeAt(index);
                       },
                     ),
                   ),
                 ]);
-              },
+              }, // item builder
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(
                 height: 5,
@@ -85,11 +113,93 @@ class AddItemsState extends State<AddItems> {
                 color: Colors.black,
               ),
             ),
-          ],
+            const Divider(
+              thickness: 1,
+              color: Colors.black,
+              endIndent: 5,
+              indent: 5,
+            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(45, 10, 45, 45),
+                child: IconButton(
+                  icon: const Icon(Icons.add_box_rounded),
+                  iconSize: 45,
+                  color: const Color.fromARGB(243, 220, 103, 7),
+                  onPressed: () {
+                    _addItemButton(context);
+                  },
+                ))
+          ], // children
         ),
       ),
     );
   } // build
+
+  /* database setting code - WORKS
+   
+   onPressed: () async {
+                    toolsRef
+                        .set({'tool': 'Jumbo Wax Ring', 'number': 3})
+                        .then((_) => print("success!"))
+                        .catchError((onError) => print("ERROR! $onError"));
+             },
+
+  */
+
+  Future<void> _addItemButton(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+          title: const Text('add an item'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                  controller: itemCtrl,
+                  decoration: const InputDecoration(
+                    hintText: "item name",
+                  )),
+              TextFormField(
+                  controller: numCtrl,
+                  decoration: const InputDecoration(
+                    hintText: "# needed",
+                  )),
+              TextFormField(
+                  controller: groupCtrl,
+                  decoration: const InputDecoration(
+                    hintText: "group name",
+                  )),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+                style: TextButton.styleFrom(
+                    textStyle: const TextStyle(
+                        //backgroundColor: const Color.fromARGB(243, 220, 103, 7),
+                        //color: Colors.white,
+                        )),
+                child: const Text("done!"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  WidgetsBinding.instance
+                      .addPostFrameCallback((_) => itemCtrl.clear());
+                  WidgetsBinding.instance
+                      .addPostFrameCallback((_) => groupCtrl.clear());
+                  WidgetsBinding.instance
+                      .addPostFrameCallback((_) => numCtrl.clear());
+                })
+          ],
+        );
+      }),
+    );
+  }
+  /*
+  TextField(
+            controller: myController,
+          ),
+  */
 
   final pageCol = Column(
     children: [
@@ -100,6 +210,8 @@ class AddItemsState extends State<AddItems> {
       const Divider(
         thickness: 1,
         color: Colors.black,
+        endIndent: 5,
+        indent: 5,
       )
     ],
   ); // end pageCol
@@ -143,7 +255,7 @@ class AddItemsState extends State<AddItems> {
 
 // **** begin divider ****
   static const divLine = Divider(
-    height: 20,
+    height: 15,
     endIndent: 30,
     indent: 30,
     thickness: 1,
