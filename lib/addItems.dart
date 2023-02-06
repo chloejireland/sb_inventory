@@ -1,7 +1,18 @@
-// ignore_for_file: file_names
+//TODO
+// - fix add screen by adding cancel button and validation of user input
+
+// ignore_for_file: file_names, avoid_print, prefer_const_constructors
+
+import 'dart:async';
+import 'dart:convert';
+import 'dart:core';
+import 'dart:io';
+
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+//import 'package:sb_inventory/tool.dart';
 
 class AddItems extends StatelessWidget {
   @override
@@ -18,28 +29,163 @@ class AddItemsPage extends StatefulWidget {
 }
 
 class _AddItemsPageState extends State<AddItemsPage> {
-  static final List<String> items = <String>["Item 1", "Item 2", "Item 3"];
+  //late List<Tool> tools;
+  late List values;
+  late List<dynamic> keys;
 
   final database = FirebaseDatabase.instance.ref();
+  DatabaseReference toolsChild = FirebaseDatabase.instance.ref("/toolID");
+  late StreamSubscription _streamSubscription;
+
+  DatabaseReference dbRef = FirebaseDatabase.instance.ref('/toolID');
+
+  //DatabaseReference toolsChild = dbRef.child("tools");
 
   final TextEditingController itemCtrl = TextEditingController();
   final TextEditingController numCtrl = TextEditingController();
   final TextEditingController groupCtrl = TextEditingController();
 
-  List<bool> isChecked = List<bool>.generate(items.length, (index) => false);
+  @override
+  void initState() {
+    super.initState();
+    _activateListener();
+  }
 
   // discard any resources used up by the object
   @override
   void dispose() {
+    super.dispose();
     itemCtrl.dispose();
     numCtrl.dispose();
     groupCtrl.dispose();
-    super.dispose();
+  }
+
+  void _activateListener() {
+    List<String> toolAtts = [];
+    dbRef.onValue.listen((DatabaseEvent event) {
+      // iterate through the whole database by every key?
+      final data = event.snapshot.value;
+      //print("raw data: ");
+      //print(data);
+      String encodeData = jsonEncode(data);
+      Map<String, dynamic> parsedData = jsonDecode(encodeData);
+      //print("parsed data:");
+      //print('${parsedData.runtimeType} : $parsedData');
+      //print("print: parsedData[1]");
+      //print(parsedData[0]);
+      //print("parsed data length: ");
+      dynamic values = parsedData.values;
+      print('values: $values');
+
+      print('--------- PARSED DATA ---------');
+
+      print('parsed dataruntime type');
+      print(parsedData.runtimeType);
+      print('parsed data: $parsedData');
+
+      // key -itemID
+      toolAtts.add(parsedData.keys.first);
+      // current stock (type cast to string)
+      toolAtts.add(values.elementAt(0)['currentStock'].toString());
+      // groupname
+      toolAtts.add(values.elementAt(0)['groupName']);
+      // toolName
+      toolAtts.add(values.elementAt(0)['toolName']);
+
+      //print(parsedData.values.elementAt(0)['currentStock']); // current Stock?
+
+      print('toolAtts: $toolAtts');
+      print('--------------------------------');
+
+      /*
+      print('---------- UNPARSED DATA -----------------');
+      print('data runtime type');
+      print(data.runtimeType);
+      print('data: $data');
+      // print(); // current Stock?
+      print('-------------------------------------------');
+      */
+
+      try {
+        //var tool = Tool.fromJson(parsedData);
+        //print(tool.currentStock);
+        //tools.add(tool);
+      } catch (e) {
+        print("error with $e");
+        //exit(0);
+      }
+
+      // TESTING SOMETHING
+      // -----------------
+      /*
+      List testingList;
+      for (MapEntry<String, dynamic> idx in parsedData.entries) {
+        testingList.add(Tool.fromJson(idx));
+      }
+      */
+
+      // ------------------
+
+      //print(parsedData.keys.first);
+      //print('values :  \t $values');
+      //Iterable<dynamic> values = parsedData.values;
+
+      /****
+
+      String toolID = parsedData.keys.first; // need to change
+
+      int curStock = parsedData.values.elementAt(0);
+      //print(curStock);
+
+      //int curStock = values.elementAt(0);
+      String groupName = values.elementAt(1);
+      String toolName = values.elementAt(2);
+      print(curStock);
+      print(toolID);
+      print(groupName);
+      print(toolName);
+
+      ******/
+
+      //values = parsedData.values;
+      //keys = parsedData.keys.first;
+      //Tool(this.toolID, this.groupName, this.toolName, this.currentStock);
+
+      //Tool tool = Tool(toolID, groupName, toolName, curStock);
+      //tools.add(tool);
+    });
+  } // end activate listenters
+
+  void makeTool(List keys, List values, List toolsList) {
+    // for the length of the 'keys' list
+    for (int idx = 0; idx < keys.length; idx++) {
+      //String a = keys[idx];
+      //String b = values[idx]['currentStock'];
+      //String c = values[idx]['groupName'];
+      //String d = values[idx]['toolName'];
+
+      //Tool tool = Tool(a, b, c, d);
+      //tools.add(tool);
+    }
+  }
+
+  String string(int) {
+    var newStr = int.toString();
+    return newStr;
   }
 
   @override
   Widget build(BuildContext context) {
-    final toolsRef = database.child('/tools');
+    //initialize tools with all of the objects before calling build function
+    // to avoid late inisitalization error?
+    final toolsRef = database.child('/toolID');
+    //_activateListener();
+
+    // makeTool(keys, values, tools);
+    // need to have the db loaded be4 making the list
+
+    List<String> tools = ['1', '2'];
+    List<bool> isChecked = List<bool>.generate(tools.length, (index) => false);
 
     return Scaffold(
       body: Container(
@@ -52,10 +198,10 @@ class _AddItemsPageState extends State<AddItemsPage> {
             ListView.separated(
               shrinkWrap: true,
               padding: const EdgeInsets.all(5),
-              itemCount: items.length,
+              itemCount: tools.length,
               itemBuilder: (context, index) {
-                final item = items[index];
-                return Row(key: ObjectKey(item), children: [
+                //final tool = tools[index];
+                return Row(key: ObjectKey(tools[index]), children: [
                   Checkbox(
                     value: isChecked[index],
                     onChanged: (value) {
@@ -67,24 +213,27 @@ class _AddItemsPageState extends State<AddItemsPage> {
                   // ignore: prefer_const_constructors
                   Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: const Text(
-                        "2",
+                      child: Text(
+                        //string(tools[index].currentStock),
+                        '1',
                         style: hRowStyle,
                       )),
 
                   // ignore: prefer_const_constructors
                   Padding(
                       padding: const EdgeInsets.fromLTRB(25, 0, 45, 0),
-                      child: const Text(
-                        "Jumbo Wax Ring",
+                      child: Text(
+                        //tools[index].toolName,
+                        'jumbo ring',
                         style: hRowStyle,
                       )),
 
                   // ignore: avoid_unnecessary_containers
                   Container(
                     // ignore: sort_child_properties_last
-                    child: const Text(
-                      "Vamac",
+                    child: Text(
+                      //tools[index].groupName,
+                      'vamac',
                       style: hRowStyle,
                     ),
                     decoration: BoxDecoration(
@@ -100,7 +249,7 @@ class _AddItemsPageState extends State<AddItemsPage> {
                       icon: const Icon(Icons.clear_rounded),
                       iconSize: 25,
                       onPressed: () {
-                        //items.removeAt(index);
+                        //tools.removeAt(index);
                       },
                     ),
                   ),
@@ -182,6 +331,23 @@ class _AddItemsPageState extends State<AddItemsPage> {
                         )),
                 child: const Text("done!"),
                 onPressed: () {
+                  //var ran = Random();
+                  Map<String, String> tool = {
+                    'toolName': itemCtrl.text,
+                    'currentStock': numCtrl.text,
+                    'groupName': groupCtrl.text,
+                    //'neededStock' : someVar
+                    //'toolID' : someID,
+                  };
+                  toolsChild
+                      .push()
+                      .set(tool)
+                      .then((_) => print("success!"))
+                      .catchError((onError) => print("ERROR! $onError"));
+                  //toolsChild
+                  //    .set({'tool': 'Jumbo Ring', 'number': 1})
+                  //    .then((_) => print("success!"))
+                  //    .catchError((onError) => print("ERROR! $onError"));
                   Navigator.of(context).pop();
                   WidgetsBinding.instance
                       .addPostFrameCallback((_) => itemCtrl.clear());
@@ -239,7 +405,7 @@ class _AddItemsPageState extends State<AddItemsPage> {
   static const scanTxt = Padding(
     padding: EdgeInsets.only(top: 5),
     child: Text(
-      "scan anytime to add items",
+      "scan anytime to add tools",
       style: scanStyle,
     ),
   );
@@ -321,4 +487,38 @@ class _AddItemsPageState extends State<AddItemsPage> {
 
 // **** begin ListView ******
 
+  @override
+  void deactivate() {
+    _streamSubscription.cancel();
+    super.deactivate();
+  }
 } //  end class
+
+class Tool {
+  String toolID = '';
+  String groupName = '';
+  String toolName = '';
+  int currentStock = 0; // change to int?
+  //int neededStock;
+
+  // constructor
+  Tool(this.toolID, this.groupName, this.toolName, this.currentStock);
+
+  Tool.fromList(List attList) {
+    toolID = attList[0];
+    currentStock = attList[1];
+    groupName = attList[2];
+    toolName = attList[3];
+  }
+  /*
+  Tool.fromJson(Map<String, dynamic> json)
+      : groupName = json['groupName'],
+        toolName = json['toolName'],
+        currentStock = json['currentStock'],
+        toolID = "12345";
+  */
+  //void tool2List(Tool tool, List<Tool> tools) {
+  //  tools.add(tool);
+  //}
+} // end tool class
+

@@ -1,9 +1,8 @@
+// TODO
+// - fix all ignored tips and problemz
+
 import 'package:flutter/material.dart';
 import 'package:sb_inventory/addItems.dart';
-
-//void main() {
-//  runApp(const Login());
-//}
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -72,6 +71,7 @@ final logInCol = Column(
         )),
       ),
       // log in button
+
       Builder(builder: (BuildContext context) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(25, 20, 25, 10),
@@ -99,6 +99,7 @@ final logInCol = Column(
           ),
         );
       })
+
       // keyboard
     ]);
 

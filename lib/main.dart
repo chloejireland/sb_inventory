@@ -1,7 +1,9 @@
-// to do
-// import font packages and change fonts
-// add login authentication
-// fix unecessary containers
+// TODO
+// - import font packages and change fonts
+// - add login authentication
+// - fix unecessary containers
+
+
 
 import 'package:flutter/material.dart';
 import 'package:sb_inventory/login.dart';
