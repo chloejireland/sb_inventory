@@ -60,21 +60,19 @@ class _AddItemsPageState extends State<AddItemsPage> {
     groupCtrl.dispose();
   }
 
+  List<String> toolAtts = [];
+
   void _activateListener() {
-    List<String> toolAtts = [];
     dbRef.onValue.listen((DatabaseEvent event) {
       // iterate through the whole database by every key?
       final data = event.snapshot.value;
-      //print("raw data: ");
-      //print(data);
+
       String encodeData = jsonEncode(data);
       Map<String, dynamic> parsedData = jsonDecode(encodeData);
-      //print("parsed data:");
-      //print('${parsedData.runtimeType} : $parsedData');
-      //print("print: parsedData[1]");
-      //print(parsedData[0]);
-      //print("parsed data length: ");
+
       dynamic values = parsedData.values;
+      dynamic keys = parsedData.keys;
+      print('keys $keys');
       print('values: $values');
 
       print('--------- PARSED DATA ---------');
@@ -82,15 +80,35 @@ class _AddItemsPageState extends State<AddItemsPage> {
       print('parsed dataruntime type');
       print(parsedData.runtimeType);
       print('parsed data: $parsedData');
+      print('parsedData.length: ');
+      print(parsedData.length);
 
       // key -itemID
-      toolAtts.add(parsedData.keys.first);
+      for (int idx = 0; idx < parsedData.length; idx++) {
+        toolAtts.add((parsedData.keys.elementAt(idx)));
+        print(parsedData.keys.elementAt(idx));
+        // current stock (type cast to string)
+        toolAtts.add(values.elementAt(idx)['currentStock'].toString());
+        // groupname
+        toolAtts.add(values.elementAt(idx)['groupName']);
+        // toolName
+        toolAtts.add(values.elementAt(idx)['toolName']);
+        print(values.elementAt(idx)['toolName']);
+      }
+
+      //parsedData.forEach((key, values) {
+      //  toolAtts.add((parsedData.keys.elementAt(idx)));
+      //  print()
+      //  toolAtts.add(values.elementAt(0)['currentStock'].toString());
+      //});
+
+      //toolAtts.add(parsedData.keys.first);
       // current stock (type cast to string)
-      toolAtts.add(values.elementAt(0)['currentStock'].toString());
+      //toolAtts.add(values.elementAt(0)['currentStock'].toString());
       // groupname
-      toolAtts.add(values.elementAt(0)['groupName']);
+      //toolAtts.add(values.elementAt(0)['groupName']);
       // toolName
-      toolAtts.add(values.elementAt(0)['toolName']);
+      //toolAtts.add(values.elementAt(0)['toolName']);
 
       //print(parsedData.values.elementAt(0)['currentStock']); // current Stock?
 
@@ -105,15 +123,6 @@ class _AddItemsPageState extends State<AddItemsPage> {
       // print(); // current Stock?
       print('-------------------------------------------');
       */
-
-      try {
-        //var tool = Tool.fromJson(parsedData);
-        //print(tool.currentStock);
-        //tools.add(tool);
-      } catch (e) {
-        print("error with $e");
-        //exit(0);
-      }
 
       // TESTING SOMETHING
       // -----------------
@@ -215,7 +224,7 @@ class _AddItemsPageState extends State<AddItemsPage> {
                       padding: const EdgeInsets.only(left: 10),
                       child: Text(
                         //string(tools[index].currentStock),
-                        '1',
+                        string(toolAtts[1]),
                         style: hRowStyle,
                       )),
 
@@ -224,7 +233,7 @@ class _AddItemsPageState extends State<AddItemsPage> {
                       padding: const EdgeInsets.fromLTRB(25, 0, 45, 0),
                       child: Text(
                         //tools[index].toolName,
-                        'jumbo ring',
+                        string(toolAtts[3]),
                         style: hRowStyle,
                       )),
 
@@ -233,7 +242,7 @@ class _AddItemsPageState extends State<AddItemsPage> {
                     // ignore: sort_child_properties_last
                     child: Text(
                       //tools[index].groupName,
-                      'vamac',
+                      string(toolAtts[2]),
                       style: hRowStyle,
                     ),
                     decoration: BoxDecoration(
